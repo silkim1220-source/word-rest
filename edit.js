@@ -38,7 +38,7 @@ const FIELDS=[['#songTitle','title','제목'],['#interpretation','interpretation
 const baseTheme=themeFor;
 themeFor=function(c){const t=baseTheme(c);const e=c&&c.edits;if(!e)return t;const o={...t};if(e.title)o.title=e.title;if(e.interpretation!=null){o.context='';o.meaning=e.interpretation}if(e.practice!=null)o.practice=e.practice;if(e.prayer!=null)o.prayer=e.prayer;return o};
 function applyEdits(){const e=current&&current.edits;if(!e)return;for(const [sel,key] of FIELDS){if(e[key]!=null){const el=q(sel);if(el&&document.activeElement!==el)el.textContent=e[key]}}}
-const baseRender=render;render=function(preview){baseRender(preview);applyEdits();setEditable(editing);if(!preview)maybeSave()};
+const baseRender=render;render=function(preview){baseRender(preview);applyEdits();setEditable(editing)};
 
 let editing=false;
 function setEditable(on){for(const [sel,key,label] of FIELDS){const el=q(sel);if(!el)continue;if(on){el.dataset.editable=key;try{el.contentEditable='plaintext-only';if(el.contentEditable!=='plaintext-only')el.contentEditable='true'}catch(x){el.contentEditable='true'}el.setAttribute('aria-label',label+' 편집');el.spellcheck=false}else{delete el.dataset.editable;el.removeAttribute('contenteditable');el.removeAttribute('aria-label')}}}
@@ -66,7 +66,7 @@ let saveTimer=null;
 function setState(s){const el=q('#saveState');if(el)el.textContent=s}
 function scheduleSave(){clearTimeout(saveTimer);setState('저장 중…');saveTimer=setTimeout(silentSave,700)}
 function flushSave(){if(saveTimer){clearTimeout(saveTimer);silentSave()}}
-function worthSaving(){return current&&(current.aiData||current.audioInfo||current.edits||tracks.has(current.id)||(current.lyrics&&history.some(x=>x.id===current.id)))}
+function worthSaving(){if(!current)return false;const m=mediaStore.get(current.id);return tracks.has(current.id)||!!(m&&m.images&&m.images.some(x=>x.status==='ok'))||(!!current.edits&&history.some(x=>x.id===current.id))}
 function maybeSave(){if(worthSaving()){clearTimeout(saveTimer);saveTimer=setTimeout(silentSave,900)}}
 function silentSave(){saveTimer=null;if(!current)return;const ed=q('#lyricsEditor');if(ed)current.lyrics=ed.value;current.mediaLinks=serializeMedia();current.updated=new Date().toISOString();
  const ix=history.findIndex(x=>x.id===current.id);const saved=JSON.parse(JSON.stringify(current));if(ix>=0)history[ix]=saved;else history.unshift(saved);history=history.slice(0,30);
