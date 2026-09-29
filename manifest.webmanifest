@@ -1,0 +1,29 @@
+{
+  "name": "말씀에 쉬다 · 말씀이 찬양이 되는 순간",
+  "short_name": "말씀에 쉬다",
+  "description": "한 단어로 묵상하고 찬양을 만들어 링크로 들려주는 앱",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5ef",
+  "theme_color": "#254f46",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
