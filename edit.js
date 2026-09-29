@@ -57,10 +57,10 @@ if(typeof renderShare==='function'){const b=renderShare;renderShare=function(){b
 /* 3. edit bar + autosave */
 const head=q('.resulthead');
 const bar=document.createElement('div');bar.className='edit-bar';
-bar.innerHTML='<button type="button" class="outline" id="editToggle" aria-pressed="false">내용 고치기</button><button type="button" class="outline" id="sendDevice">다른 기기에서 이어서 편집</button><button type="button" class="outline" id="exportFile">파일로 내보내기</button><button type="button" class="outline" id="importFile">파일 가져오기</button><input type="file" id="importInput" accept=".json,application/json" hidden><span class="save-state" id="saveState" role="status" aria-live="polite"></span>';
-const hint=document.createElement('p');hint.className='edit-hint';hint.textContent='점선 상자를 눌러 제목·말씀 풀이·실천·기도·내레이션을 바로 고치세요. 가사는 ‘찬양 가사’, 율동은 ‘율동’, 소개글은 ‘공유’ 탭에서 고칩니다. 고친 내용은 자동으로 저장돼요.';
+bar.innerHTML='<button type="button" class="outline" id="editToggle" aria-pressed="false">편집</button><button type="button" class="outline" id="sendDevice">다른 기기에서 이어서 편집</button><button type="button" class="outline" id="exportFile">파일로 내보내기</button><button type="button" class="outline" id="importFile">파일 가져오기</button><input type="file" id="importInput" accept=".json,application/json" hidden><span class="save-state" id="saveState" role="status" aria-live="polite"></span>';
+const hint=document.createElement('p');hint.className='edit-hint';hint.textContent='점선 상자를 눌러 제목·말씀 풀이·실천·기도·내레이션을 바로 수정하세요. 가사는 ‘찬양 가사’, 율동은 ‘율동’, 소개글은 ‘공유’ 탭에서 편집합니다. 수정한 내용은 자동으로 저장돼요.';
 head.after(bar,hint);
-q('#editToggle').onclick=()=>{editing=!editing;document.body.classList.toggle('editing',editing);q('#editToggle').setAttribute('aria-pressed',String(editing));q('#editToggle').textContent=editing?'고치기 끝내기':'내용 고치기';setEditable(editing);if(editing){if(typeof setTab==='function')setTab('word');setTimeout(()=>q('#songTitle')?.focus(),50);toast('점선 상자를 눌러 고치세요. 자동 저장됩니다.')}else{flushSave();const tab=typeof activeTab!=='undefined'?activeTab:'';try{render();if(tab&&typeof setTab==='function')setTab(tab)}catch(x){}toast('고친 내용을 저장하고 소개글·썸네일 문구에 반영했어요.')}};
+q('#editToggle').onclick=()=>{editing=!editing;document.body.classList.toggle('editing',editing);q('#editToggle').setAttribute('aria-pressed',String(editing));q('#editToggle').textContent=editing?'수정 완료':'편집';setEditable(editing);if(editing){if(typeof setTab==='function')setTab('word');setTimeout(()=>q('#songTitle')?.focus(),50);toast('점선 상자를 눌러 수정하세요. 자동 저장됩니다.')}else{flushSave();const tab=typeof activeTab!=='undefined'?activeTab:'';try{render();if(tab&&typeof setTab==='function')setTab(tab)}catch(x){}toast('수정한 내용을 저장하고 소개글·썸네일 문구에 반영했어요.')}};
 
 let saveTimer=null;
 function setState(s){const el=q('#saveState');if(el)el.textContent=s}
@@ -115,7 +115,7 @@ async function packText(txt){const raw=new TextEncoder().encode(txt);if(typeof C
 async function unpackText(s){const kind=s[0],bytes=unb64u(s.slice(1));if(kind==='u')return new TextDecoder().decode(bytes);const ds=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return new Response(ds).text()}
 
 const dlg=document.createElement('dialog');dlg.id='syncDialog';
-dlg.innerHTML='<div class="dialoghead"><h2>다른 기기에서 이어서 편집</h2><button class="outline" type="button" id="syncClose">닫기</button></div><p class="sub" id="syncLead">휴대폰이나 다른 컴퓨터에서 이 링크를 열면 지금 곡을 그대로 이어서 고칠 수 있어요.</p><div class="sync-link"><input class="input" id="syncLink" readonly aria-label="이어서 편집 링크"><button class="outline" type="button" id="syncCopy">복사</button></div><div class="sync-actions"><button class="primary" type="button" id="syncShare">카카오톡·문자로 보내기</button><a class="outline download-link" id="syncOpen" target="_blank" rel="noopener">이 기기에서 열어보기 ↗</a></div><p class="localnote" id="syncNote"></p>';
+dlg.innerHTML='<div class="dialoghead"><h2>다른 기기에서 이어서 편집</h2><button class="outline" type="button" id="syncClose">닫기</button></div><p class="sub" id="syncLead">휴대폰이나 다른 컴퓨터에서 이 링크를 열면 지금 곡을 그대로 이어서 편집할 수 있어요.</p><div class="sync-link"><input class="input" id="syncLink" readonly aria-label="이어서 편집 링크"><button class="outline" type="button" id="syncCopy">복사</button></div><div class="sync-actions"><button class="primary" type="button" id="syncShare">카카오톡·문자로 보내기</button><a class="outline download-link" id="syncOpen" target="_blank" rel="noopener">이 기기에서 열어보기 ↗</a></div><p class="localnote" id="syncNote"></p>';
 document.body.append(dlg);
 q('#syncClose').onclick=()=>dlg.close();
 q('#syncCopy').onclick=()=>copyPlain(q('#syncLink').value);
@@ -143,7 +143,7 @@ async function importBundle(b,from){if(!b||b.app!=='word-rest'||!b.project||!b.p
  if(Array.isArray(b.links)&&typeof saveMusicLink==='function')for(const l of b.links){if(!musicLinks.some(x=>x.link===l.link))saveMusicLink(l)}
  tracks.delete(p.id);mediaStore.delete(p.id);
  render();silentSave();toast('‘'+t+'’을(를) 불러왔어요. 음악과 이미지를 가져오는 중…');
- await restoreMedia(current);silentSave();toast('이어서 편집할 준비가 됐어요. ‘내용 고치기’로 고쳐보세요.');return true}
+ await restoreMedia(current);silentSave();toast('이어서 편집할 준비가 됐어요. ‘편집’을 눌러 수정해 보세요.');return true}
 window.importBundle=importBundle;
 
 function clearHash(){try{window.history.replaceState(null,'',location.href.split('#')[0])}catch(x){}}
@@ -157,7 +157,7 @@ async function readEditHash(){const h=location.hash.replace(/^#/,'');let b=null;
 window.addEventListener('hashchange',readEditHash);
 setTimeout(readEditHash,300);
 
-/* 6. app settings from config.js + "앱 고치기" */
+/* 6. app settings from config.js + "앱 수정" */
 const C=window.APP_CONFIG||null;
 if(C){try{
  const setText=(sel,v)=>{const el=q(sel);if(el&&v!=null&&v!=='')el.textContent=v};
@@ -175,14 +175,27 @@ if(C){try{
 
 const REPO='https://github.com/silkim1220-source/word-rest';
 const ed=document.createElement('dialog');ed.id='editApp';
-ed.innerHTML='<div class="dialoghead"><h2>앱 고치기</h2><button class="outline" type="button" data-close="editApp">닫기</button></div>'+
-'<p class="sub">어느 브라우저·기기에서든 GitHub에 로그인해서 고칠 수 있어요. 저장(Commit)하면 1~2분 뒤 이 주소에 반영됩니다.</p>'+
-'<h3 class="sectiontitle">1. 화면 글자·색 바꾸기 (쉬움)</h3><ol><li>아래 버튼으로 <b>config.js</b> 편집 화면을 여세요.</li><li>따옴표 안의 글자나 색 코드만 바꾸세요.</li><li>오른쪽 위 <b>Commit changes</b> → 다시 <b>Commit changes</b>.</li><li>1~2분 뒤 앱을 새로고침하세요.</li></ol><a class="primary" href="'+REPO+'/edit/main/config.js" target="_blank" rel="noopener">config.js 고치기 ↗</a>'+
-'<h3 class="sectiontitle">2. 화면 구성·기능 고치기</h3><ol><li><b>index.html</b>: 화면에 보이는 문구·버튼·안내문</li><li><b>app.css</b>: 디자인(글꼴 크기·여백·색)</li><li><b>app-01.js ~ app-09.js, web.js, edit.js</b>: 기능 코드 (고치기 전에 꼭 백업하세요)</li></ol><a class="outline" href="'+REPO+'/edit/main/index.html" target="_blank" rel="noopener">index.html 고치기 ↗</a> <a class="outline" href="https://github.dev/silkim1220-source/word-rest" target="_blank" rel="noopener">전체 편집기 열기 (PC) ↗</a>'+
-'<h3 class="sectiontitle">되돌리기</h3><p class="localnote">잘못 고쳤다면 저장소의 <a href="'+REPO+'/commits/main" target="_blank" rel="noopener">변경 기록</a>에서 이전 버전을 확인할 수 있어요. 어려우면 Aside에게 “앱 되돌려줘”라고 말해 주세요.</p>';
+ed.innerHTML='<div class="dialoghead"><h2>앱 수정·편집</h2><button class="outline" type="button" data-close="editApp">닫기</button></div>'+
+'<p class="sub">어느 브라우저·기기에서든 GitHub에 로그인해서 수정할 수 있어요. 저장(Commit)하면 1~2분 뒤 이 주소에 반영됩니다.</p>'+
+'<h3 class="sectiontitle">1. 화면 글자·색 수정 (쉬움)</h3><ol><li>아래 버튼으로 <b>config.js</b> 편집 화면을 여세요.</li><li>따옴표 안의 글자나 색 코드만 바꾸세요.</li><li>오른쪽 위 <b>Commit changes</b> → 다시 <b>Commit changes</b>.</li><li>1~2분 뒤 앱을 새로고침하세요.</li></ol><a class="primary" href="'+REPO+'/edit/main/config.js" target="_blank" rel="noopener">config.js 수정 ↗</a>'+
+'<h3 class="sectiontitle">2. 화면 구성·기능 편집</h3><ol><li><b>index.html</b>: 화면에 보이는 문구·버튼·안내문</li><li><b>app.css</b>: 디자인(글꼴 크기·여백·색)</li><li><b>app-01.js ~ app-09.js, web.js, edit.js</b>: 기능 코드 (수정 전에 꼭 백업하세요)</li></ol><a class="outline" href="'+REPO+'/edit/main/index.html" target="_blank" rel="noopener">index.html 편집 ↗</a> <a class="outline" href="https://github.dev/silkim1220-source/word-rest" target="_blank" rel="noopener">전체 편집기 열기 (PC) ↗</a>'+
+'<h3 class="sectiontitle">되돌리기</h3><p class="localnote">잘못 수정했다면 저장소의 <a href="'+REPO+'/commits/main" target="_blank" rel="noopener">변경 기록</a>에서 이전 버전을 확인할 수 있어요. 어려우면 Aside에게 “앱 되돌려줘”라고 말해 주세요.</p>';
 document.body.append(ed);
 ed.querySelector('[data-close]').onclick=()=>ed.close();
-const foot=q('footer');if(foot&&isWeb){const b=document.createElement('button');b.type='button';b.id='editAppBtn';b.textContent='앱 고치기';b.onclick=()=>ed.showModal();foot.append(b)}
+const foot=q('footer');if(foot&&isWeb){const b=document.createElement('button');b.type='button';b.id='editAppBtn';b.textContent='앱 수정';b.onclick=()=>ed.showModal();foot.append(b)}
+
+
+/* 7. scene images and video: always 실사 일러스트, made automatically right after the music */
+(function(){
+ const sel=q('#imageLook');
+ if(sel){[...sel.options].forEach(o=>{if(o.value!=='illust')o.remove()});sel.value='illust';if(sel.options[0])sel.options[0].textContent='실사 일러스트';}
+ function force(){const s=q('#imageLook');if(s)s.value='illust';const a=q('#autoMedia');if(a)a.checked=true;try{costsUI()}catch(e){}}
+ try{if(typeof modeStore!=='undefined'&&modeStore.settings){for(const k of Object.keys(modeStore.settings)){const s=modeStore.settings[k];if(s){s.imageLook='illust';s.autoMedia=true}}if(storageAvailable)localStorage.setItem('word-rest-styles-v5',JSON.stringify(modeStore))}}catch(e){}
+ force();
+ document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setTimeout(force,0)));
+ if(typeof runMedia==='function'){const b=runMedia;runMedia=function(opts){return b({...(opts||{}),look:'illust'})}}
+ const mn=q('#motionEmpty');if(mn)mn.textContent='어린이 찬양은 음악이 완성되면 실사 일러스트 장면·영상과 함께 율동이 자동으로 만들어집니다.';
+})();
 
 /* first paint */
 try{applyEdits()}catch(e){}

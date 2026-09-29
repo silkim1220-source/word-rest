@@ -1,4 +1,4 @@
-const CACHE='word-rest-v9';
+const CACHE='word-rest-v9-1';
 const SHELL=['./','index.html','app.css','config.js','bg.jpg','manifest.webmanifest','icon-192.png','icon-512.png','apple-touch-icon.png','favicon.png','app-01.js','app-02.js','app-03.js','app-04.js','app-05.js','app-06.js','lame.min.js','app-08.js','app-09.js','web.js','edit.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
